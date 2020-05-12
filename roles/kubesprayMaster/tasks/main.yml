@@ -1,0 +1,31 @@
+---
+
+- name: setenforce settings
+  shell:  setenforce 0;sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux;echo hello
+
+- name: Enable firewalld
+  service: name=firewalld state=started enabled=yes
+
+- name: enable ports on Master
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+  become: yes
+  with_items:  "{{portsMaster}}" 
+
+- name: reload firewall
+  command: sudo firewall-cmd --reload
+
+- name: modprobe br_netfilter
+  command: modprobe br_netfilter
+- name: iptables
+  command: echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+- name: ip forwarding
+  command: sysctl -w net.ipv4.ip_forward=1
+
+- name: Stop service firewalld, if started
+  service:
+    name: firewalld
+    state: stopped
+

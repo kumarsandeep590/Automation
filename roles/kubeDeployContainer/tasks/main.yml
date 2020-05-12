@@ -1,0 +1,26 @@
+---
+
+#Jenkins Steps     
+     - name: check jenkins service exist or not
+       command: "kubectl get services -l app=jenkins"
+       register: found_service_jenkins
+
+     - name: remove jenkins service
+       command: "kubectl delete services jenkins"
+       when: found_service_jenkins.stdout != ""
+
+     - name: check jenkins deployment exist or not
+       command: "kubectl get deployments -l app=jenkins"
+       register: found_deployment_jenkins
+
+     - name: remove jenkins deployment
+       command: "kubectl delete deployments jenkins"
+       when: found_deployment_jenkins.stdout != ""
+
+     - name: copy jenkins yml file to host location
+       copy:
+         src: jenkins.yml
+         dest: "jenkins.yml"
+       
+     - name: create jenkins service/deployment from jenkins file
+       command: "kubectl create -f jenkins.yml"

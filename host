@@ -1,0 +1,31 @@
+[master]
+vm2 ansible_user=root 
+
+[node]
+vm3 ansible_user=root 
+
+[complete]
+vm2 ansible_user=root 
+vm3 ansible_user=root
+
+[local]
+localhost ansible_connection=local
+
+[all]
+vm2 ansible_user=root ansible_host=192.168.0.106 
+vm3 ansible_user=root ansible_host=192.168.0.107
+
+[kube-master]
+vm2
+
+[etcd]
+vm2
+
+
+[kube-node]
+vm3
+
+
+[k8s-cluster:children]
+kube-master
+kube-node

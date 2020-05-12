@@ -1,0 +1,16 @@
+---
+- name: Clone git repo
+  git:
+    repo: https://github.com/kubernetes-incubator/kubespray.git
+    dest: "{{home_dir}}"
+    version: master
+- name: install wheel thorugh pip
+  command: pip install wheel
+
+- name: move to kubespray directory
+#  pip:
+#    requirements: "{{home_dir}}/requirements.txt"
+  command: pip install -r "{{home_dir}}"/requirements.txt
+
+- name: execute ansible playbook 
+  command: ansible-playbook -i "{{host_path}}" "{{home_dir}}/cluster.yml"

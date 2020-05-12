@@ -1,0 +1,37 @@
+---
+
+- hosts: master
+  name: setup master
+  become: true
+  roles:
+    - role: kubesprayMaster
+      tags: master
+
+- hosts: node
+  name: setup node
+  become: true
+  roles:
+    - role: kubesprayAgent
+      tags: agent
+- hosts: complete
+  name: setup all nodes
+  become: true
+  roles:
+    - role: kubesprayall
+      tags: complete
+- hosts: master
+  gather_facts: true
+  name: setup all nodes
+  roles:
+    - role: kubespray
+      tags: local
+- hosts: master
+  name: setup dashboard on master
+  become: true
+  roles:
+    - role: kubesprayDashboard 
+      tags: masterDash
+    - role: kubeDeployContainer
+      tags: container 
+
+

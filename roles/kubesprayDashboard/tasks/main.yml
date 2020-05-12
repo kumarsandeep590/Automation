@@ -1,0 +1,31 @@
+---
+
+- name: simulate long running op, allow to run for 45 sec, fire and forget
+  command: kubectl proxy
+  async: 2592000
+  poll: 0 
+
+- name: Setup service account dashboard
+  shell: "kubectl create serviceaccount dashboard -n default"
+
+
+- name: Clusterrolebinding
+  shell: "kubectl create clusterrolebinding dashboard-admin -n default \ --clusterrole=cluster-admin \ --serviceaccount=default:dashboard"
+
+- name: Config file
+  shell: kubectl get secret $(kubectl get serviceaccount dashboard -o jsonpath="{.secrets[0].name}") -o jsonpath="{.data.token}" | base64 --decode
+  register: Token
+
+- name: Ansible create file with content example
+  copy:
+      dest: "Token"
+      content: "{{Token.stdout}}"
+
+
+#using config file
+#- name: Setup token
+#  shell: kubectl -n kube-system describe secret default| awk '$1=="token:"{print $2}'
+#  register: Token
+
+#- name: Update config file
+#  shell: kubectl config set-credentials kubernetes-admin --token="{{Token}}"
