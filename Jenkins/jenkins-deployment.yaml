@@ -1,0 +1,31 @@
+apiVersion: apps/v1 # for versions before 1.7.0 use apps/v1beta1
+kind: Deployment
+metadata:
+  name: jenkins-new-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins1
+  template:
+    metadata:
+      labels:
+        app: jenkins1
+    spec:
+      containers:
+      - name: jenkins1
+        image: jenkins/jenkins:2.233
+        ports:
+        - name: http-port
+          containerPort: 8080
+        - name: jnlp-port
+          containerPort: 30003
+        nodeSelector:
+          nodetype: jenkins_master
+        volumeMounts:
+          - name: jenkins-home
+            mountPath: /var/jenkins_home
+      volumes:
+        - name: jenkins-home
+          persistentVolumeClaim:
+            claimName: hostpath-pvc
